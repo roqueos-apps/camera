@@ -7,8 +7,9 @@ usa [versionamento semântico](https://semver.org/lang/pt-BR/).
 
 A Câmera sai do RoqueOS para o próprio repositório, falando com ele pelo `app-sdk` 0.3.0 e
 desenhada com o kit `ui` 0.4.0. Para quem usa, as fotos e os vídeos continuam indo para as
-Imagens, com o mesmo nome de arquivo. A tag sai depois que a 0.3.0 do SDK tiver a tag dela na
-`main`.
+Imagens, com o mesmo nome de arquivo. A `v0.1.0` pina o SDK num commit do PR #5 do
+`app-sdk`; quando a 0.3.0 tiver a tag dela na `main`, sai a 0.1.1 pinada nela, e é essa
+que ganha data.
 
 ### Mudado
 
