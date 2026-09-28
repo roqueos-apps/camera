@@ -124,6 +124,38 @@ describe('a Câmera pelo app-sdk', () => {
     f.montagem.desmontar()
   })
 
+  it('iniciando, o visor diz o que acontece com a barra que corre, parada no perfil leve', async () => {
+    // O `ROSAppLoader state="loading"` de antes tinha a barra; a pessoa vê que a câmera está
+    // subindo, e não um visor parado. O aparelho aqui ainda não respondeu ao pedido da câmera.
+    const nunca = new Promise(() => {})
+    navigator.mediaDevices.getUserMedia = vi.fn(() => nunca)
+    const f = montar()
+    await vi.waitFor(() => expect(f.el.querySelector('.rui-vazio__barra')).not.toBeNull())
+    expect(f.texto()).toContain('Iniciando câmera...')
+    expect(f.el.querySelector('.rui-vazio__barra--parada')).toBeNull()
+    f.montagem.desmontar()
+
+    const leve = montar({ modoLeve: true })
+    await vi.waitFor(() =>
+      expect(leve.el.querySelector('.rui-vazio__barra--parada')).not.toBeNull(),
+    )
+    leve.montagem.desmontar()
+  })
+
+  it('ao vivo, e na falha, a barra do carregando sai', async () => {
+    const f = montar()
+    await aoVivo(f.el)
+    expect(f.el.querySelector('.rui-vazio__barra')).toBeNull()
+    f.montagem.desmontar()
+
+    // A permissão negada é um estado parado: a barra correndo ali diria que algo ainda vem.
+    prepararCamera({ falha: Object.assign(new Error('negado'), { name: 'NotAllowedError' }) })
+    const negado = montar()
+    await vi.waitFor(() => expect(negado.texto()).toContain('Tentar novamente'))
+    expect(negado.el.querySelector('.rui-vazio__barra')).toBeNull()
+    negado.montagem.desmontar()
+  })
+
   it('sem lanterna no aparelho, não há botão de lanterna', async () => {
     prepararCamera({ recursos: {} })
     const f = montar()

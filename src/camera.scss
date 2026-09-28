@@ -311,7 +311,7 @@
     justify-content: center;
     gap: 32px;
     padding: 20px 24px;
-    padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(20px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
     background: var(--camera-superficie);
     backdrop-filter: var(--camera-desfoque);
     -webkit-backdrop-filter: var(--camera-desfoque);

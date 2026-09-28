@@ -92,6 +92,15 @@ memória e some no F5; o aviso de salvo aparece no console. A janela é redimens
 de 560 px de largura os rótulos do modo somem e o disparador encolhe. `?idioma=ar-AR` abre em
 árabe, `?leve=1` como o aparelho fraco vê, `?convidado=1` sem conta.
 
+## Paridade com o app de antes
+
+`paridade.json` é o inventário do que a Câmera fazia dentro do RoqueOS e do que aconteceu com
+cada coisa na saída: `mantida`, `mudou` (com a nota do que mudou) ou `perdida` (só com a
+decisão escrita de quem decidiu). Cada item cita o teste deste repo que o prova, ou a
+evidência. O RoqueOS confere o arquivo no pacote instalado antes de aceitar a versão: teste
+citado que não existe mais, estado de dúvida ou perda sem decisão reprovam. Mudou uma
+funcionalidade, ou um teste citado ali? Atualize o inventário no mesmo commit.
+
 ## Contribuir
 
 Leia o [CONTRIBUTING.md](CONTRIBUTING.md). Todo commit leva `Signed-off-by` (DCO), e o CI
@@ -127,3 +136,8 @@ Run `yarn install --ignore-scripts`, then `yarn dev` (a fake RoqueOS window with
 account) or `yarn verificar` (what CI runs). Every commit must be signed off (DCO). Licensed
 under [MIT](LICENSE); icons are Material Icons (Apache-2.0). The RoqueOS name and brand belong
 to LEVELHARD and are not covered.
+
+`paridade.json` lists everything this app did inside the RoqueOS core and what happened to each
+item when it moved out (kept, changed with a note, or lost only with a written decision), each
+backed by a test in this repository or other evidence. RoqueOS checks it in the installed
+package before accepting a version.

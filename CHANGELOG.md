@@ -3,6 +3,30 @@
 O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o projeto
 usa [versionamento semântico](https://semver.org/lang/pt-BR/).
 
+## [0.1.1] - sem data até o RoqueOS instalar
+
+A auditoria de paridade de 28/09/2026 (Goal 28): o founder pediu que nenhuma funcionalidade
+se perdesse na saída do núcleo.
+
+### Adicionado
+
+- `paridade.json`: o inventário do que a Câmera fazia dentro do RoqueOS, item por item, e o que
+  aconteceu com cada coisa na saída (48 itens: 41 mantidas, 7 mudaram, 0 perdidas). Cada item
+  cita o teste deste repo que o prova, ou a evidência, e o RoqueOS confere o arquivo no pacote
+  instalado: teste citado que não existe mais, estado de dúvida ou perda sem decisão escrita
+  reprovam. O arquivo vai no pacote (`files`).
+
+### Corrigido
+
+- **No app do iPhone, o disparador volta a ficar acima da barra de gestos**: a margem de baixo
+  volta a usar a `--safe-area-inset-bottom` que o RoqueOS congela, com o `env()` só de
+  reserva, como a Câmera fazia antes da saída.
+
+### Mudado
+
+- Iniciando, o visor mostra a barra do carregando que corre (o carregador de antes), parada no
+  perfil leve; a folha de ajustes fecha também arrastando a alça (kit `ui` 0.6.0).
+
 ## [0.1.0] - sem data até o RoqueOS instalar
 
 A Câmera sai do RoqueOS para o próprio repositório, falando com ele pelo `app-sdk` 0.3.0 e

@@ -1,0 +1,359 @@
+{
+  "versao": 1,
+  "app": "camera",
+  "antes": "a Câmera de antes, dentro do RoqueOS, até 28/09/2026: a janela do app, o motor da câmera, o estilo, os textos nos 10 idiomas, a entrada no registro de apps do RoqueOS e a da pré-carga; com testes de componente e do motor, dentro do RoqueOS.",
+  "auditoria": "28/09/2026: auditoria linha a linha (55 linhas) do código de antes, dentro do RoqueOS, até 28/09/2026, contra o de depois (roqueos-apps/camera v0.1.0, c8dd42e) e o lado do sistema no RoqueOS (o envio de arquivo e o sistema de apps), com o diff do motor (só o nome da métrica mudou, para aoFotografar), os 17 casos do spec antigo do motor conferidos no novo e os textos comparados por script, chave por chave, nos 10 idiomas. Onde a auditoria ficou em dúvida ou discordou, valem os veredictos conferidos no código do RoqueOS no mesmo dia (G1, G2, G3, G5 a G11 e os da Câmera). Os testes citados são os do repo hoje, com os novos (estilo.spec.js e os do carregando). Nas evidências, 'antes' descreve o comportamento de antes, dentro do RoqueOS, sem citar arquivo ou linha do front (fechado); 'app' é o repo da Câmera, com as linhas da v0.1.0. Pulados: as 6 linhas que não existiam antes (#21 pausar o vídeo, #49 atalhos de teclado, #50 filtros, #51 som do obturador, #52 tratamento próprio de retrato e paisagem, #53 lembrar os ajustes entre aberturas), porque não há o que manter; e a #55, 'tudo isso num iPhone de verdade', que não é funcionalidade. O iPhone real não foi medido, nem a câmera de verdade: o QA usou a câmera falsa do Chromium e o WebKit do Playwright, sem câmera.",
+  "funcionalidades": [
+    {
+      "o_que": "Abrir a câmera ao abrir a janela: traseira, 720p, microfone só no vídeo",
+      "estado": "mantida",
+      "testes": [
+        "test/app.spec.js › abre a câmera traseira, com a barra no idioma e os botões que o aparelho sustenta",
+        "test/useCamera.spec.js › starts the stream, probes capabilities and detects multiple cameras",
+        "test/app.spec.js › vídeo: o modo pede o microfone, grava, para, e salva como webm"
+      ],
+      "evidencia": "Os testes conferem a traseira e o pedido sem áudio na foto e com áudio no vídeo; o 720p padrão não tem teste: app src/useCamera.js:20-25,52, igual a antes, dentro do RoqueOS. A tela agora só monta depois de baixar o texto do idioma (app src/index.js:48-55); se o texto não baixa, monta sem rótulos (app src/textos.js:48-49), onde antes, dentro do RoqueOS, a tela de erro do app aparecia enquanto o texto não chegava. Esse caso não foi medido."
+    },
+    {
+      "o_que": "Ver a imagem ao vivo no visor, inteira e sobre fundo preto",
+      "estado": "mantida",
+      "evidencia": "app src/Camera.vue:45-53 (autoplay, playsinline, muted) e src/camera.scss:124-140 (object-fit contain, fundo preto), iguais ao comportamento de antes, dentro do RoqueOS. Os testes de tela só esperam o disparador liberar, não olham o vídeo. QA do yarn dev em Chromium com a câmera falsa; não medido no aparelho."
+    },
+    {
+      "o_que": "Ver o nome \"Câmera\" na barra de cima",
+      "estado": "mantida",
+      "testes": [
+        "test/app.spec.js › abre a câmera traseira, com a barra no idioma e os botões que o aparelho sustenta"
+      ],
+      "evidencia": "app src/Camera.vue:7-11, igual a antes, dentro do RoqueOS."
+    },
+    {
+      "o_que": "Ligar e desligar a lanterna, que só aparece quando o aparelho tem",
+      "estado": "mantida",
+      "testes": [
+        "test/useCamera.spec.js › toggleTorch applies the torch constraint",
+        "test/app.spec.js › sem lanterna no aparelho, não há botão de lanterna",
+        "test/app.spec.js › abre a câmera traseira, com a barra no idioma e os botões que o aparelho sustenta"
+      ],
+      "evidencia": "O botão ganhou aria-pressed. Lanterna de verdade não medida: a câmera falsa do QA não tem lanterna."
+    },
+    {
+      "o_que": "Trocar entre a câmera traseira e a frontal, com o botão só quando há duas ou mais",
+      "estado": "mantida",
+      "testes": [
+        "test/useCamera.spec.js › switchCamera toggles facingMode and restarts",
+        "test/useCamera.spec.js › uma câmera só não é \"várias câmeras\"",
+        "test/useCamera.spec.js › nenhuma câmera listada também não é \"várias câmeras\"",
+        "test/app.spec.js › abre a câmera traseira, com a barra no idioma e os botões que o aparelho sustenta"
+      ],
+      "evidencia": "Troca de verdade não medida: a câmera falsa do QA é uma só."
+    },
+    {
+      "o_que": "Abrir e fechar a folha de ajustes",
+      "estado": "mantida",
+      "testes": ["test/app.spec.js › o temporizador conta até zero e só então fotografa"],
+      "evidencia": "O teste abre a folha e escolhe uma opção. A folha agora é o RosFolha do kit ui no lugar da folha de antes, dentro do RoqueOS (app src/Camera.vue:28-33,268-371). Fechar arrastando a alça para baixo voltou no ui v0.6.0, que o app pina (teste do kit, test/componentes.spec.js › arrastar a alça para baixo fecha; o arraste curto volta a folha ao lugar); Esc, véu e o botão fechar continuam, e o QA do yarn dev mediu o Esc devolvendo o foco. O teste do app acha as opções dentro do elemento do app, e não no body; a cor da opção ativa (as variáveis --camera-* moram em .camera) não foi medida na tela, e o arrasto não foi medido no aparelho."
+    },
+    {
+      "o_que": "Usar o temporizador (desligado, 3, 5 ou 10 s), com a contagem pulsando na tela",
+      "estado": "mantida",
+      "testes": ["test/app.spec.js › o temporizador conta até zero e só então fotografa"],
+      "evidencia": "A pulsação não tem teste: app src/camera.scss:246-255, como antes, dentro do RoqueOS. A contagem ganhou aria-live."
+    },
+    {
+      "o_que": "Escolher a proporção (Cheio, 1:1, 4:3, 16:9), com a máscara no visor e a foto recortada igual",
+      "estado": "mantida",
+      "testes": ["test/useCamera.spec.js › sem zoom o recorte é o quadro inteiro"],
+      "evidencia": "O teste cobre só o Cheio; 1:1, 4:3 e 16:9 não têm teste, nem antes: app src/useCamera.js:208-218 e src/Camera.vue:97-102,294-310,428-430, iguais ao comportamento de antes, dentro do RoqueOS. O vídeo não é recortado, antes e depois. O QA do yarn dev em Chromium passou pela proporção."
+    },
+    {
+      "o_que": "Escolher a resolução (480p, 720p, 1080p, 4K), que reinicia a câmera",
+      "estado": "mantida",
+      "testes": ["test/useCamera.spec.js › setResolution restarts while streaming"],
+      "evidencia": "A lista é a de antes (app src/useCamera.js:20-25, igual a antes, dentro do RoqueOS); os botões na folha (app src/Camera.vue:312-328) não têm teste."
+    },
+    {
+      "o_que": "Mostrar a grade no visor: nenhuma, terços ou áurea (padrão terços)",
+      "estado": "mantida",
+      "testes": ["test/textos.spec.js › a tela pede chaves, e o mapa da grade foi lido"],
+      "evidencia": "O teste confere só os rótulos da grade; o desenho não tem teste: app src/Camera.vue:104-123 e 411 (padrão terços), igual a antes, dentro do RoqueOS. O QA do yarn dev em Chromium passou pela grade."
+    },
+    {
+      "o_que": "Espelhar a câmera frontal na prévia e na foto (ligado por padrão)",
+      "estado": "mantida",
+      "testes": [
+        "test/useCamera.spec.js › capturePhoto mirrors the front camera and stores the result"
+      ],
+      "evidencia": "O interruptor na folha não tem teste (app src/Camera.vue:348-357); o padrão ligado está em app src/useCamera.js:53, como antes, dentro do RoqueOS. O rótulo agora também liga e desliga."
+    },
+    {
+      "o_que": "Ver o nível para alinhar a foto, verde quando está reto",
+      "estado": "mantida",
+      "evidencia": "Sem teste, nem antes: app src/Camera.vue:125-131,359-369,432-462 (DeviceOrientation, pedido de permissão do iOS, reto abaixo de 1,5°), igual ao comportamento de antes, dentro do RoqueOS. Não medido no aparelho."
+    },
+    {
+      "o_que": "Dar zoom pela faixa deslizante, com o selo do zoom (2.0×) no visor",
+      "estado": "mantida",
+      "evidencia": "A faixa virou o range nativo (app src/Camera.vue:155-168) no lugar da faixa deslizante de antes, dentro do RoqueOS, com o mesmo mínimo, máximo e passo 0.1; o selo está em app src/Camera.vue:140-142. Sem teste de tela; o arrasto no iPhone não foi medido."
+    },
+    {
+      "o_que": "Zoom da própria câmera quando o aparelho tem; sem ele, recorte até 4×, e a foto sai como a tela",
+      "estado": "mantida",
+      "testes": [
+        "test/useCamera.spec.js › setZoom uses applyConstraints when the device supports native zoom",
+        "test/useCamera.spec.js › falls back to CSS zoom when the device has no native zoom",
+        "test/useCamera.spec.js › o zoom por CSS recorta o CENTRO do quadro",
+        "test/useCamera.spec.js › a faixa de zoom é a que o aparelho declarou, zero inclusive",
+        "test/useCamera.spec.js › sem capacidade de zoom, a faixa é a neutra"
+      ],
+      "evidencia": "Zoom nativo de verdade não medido: a câmera falsa do QA não tem zoom."
+    },
+    {
+      "o_que": "Dar zoom com a pinça no visor",
+      "estado": "mantida",
+      "evidencia": "app src/Camera.vue:38-42,471-491, a mesma lógica de ponteiros de antes, dentro do RoqueOS. Sem teste; não medido no aparelho."
+    },
+    {
+      "o_que": "Ver o anel de foco onde toca no visor (só visual)",
+      "estado": "mantida",
+      "evidencia": "app src/Camera.vue:133-138,492-503, igual a antes, dentro do RoqueOS. Sem teste."
+    },
+    {
+      "o_que": "Tirar foto em JPEG, com o clarão branco na tela",
+      "estado": "mantida",
+      "testes": [
+        "test/app.spec.js › foto: tira, mostra, e salva nas Imagens com o nome de sempre, e a métrica conta"
+      ],
+      "evidencia": "O teste confere o JPEG na prévia; a qualidade 0,95 e o clarão de 150 ms não têm teste: app src/Camera.vue:543-548, igual a antes, dentro do RoqueOS."
+    },
+    {
+      "o_que": "Alternar entre os modos Foto e Vídeo",
+      "estado": "mantida",
+      "testes": [
+        "test/app.spec.js › vídeo: o modo pede o microfone, grava, para, e salva como webm"
+      ],
+      "evidencia": "O botão do modo ganhou aria-pressed. Microfone de verdade não medido no aparelho."
+    },
+    {
+      "o_que": "Gravar e parar vídeo pelo disparador",
+      "estado": "mantida",
+      "testes": [
+        "test/useCamera.spec.js › records video and produces a blob capture",
+        "test/app.spec.js › vídeo: o modo pede o microfone, grava, para, e salva como webm"
+      ],
+      "evidencia": "A escolha do formato (webm vp9/opus, com alternativa) é a de antes, sem teste: app src/useCamera.js:257-291, igual a antes, dentro do RoqueOS. O QA do yarn dev em Chromium gravou e salvou vídeo; não medido no Safari do iPhone."
+    },
+    {
+      "o_que": "Ver o tempo de gravação (mm:ss) com o ponto piscando",
+      "estado": "mantida",
+      "testes": [
+        "test/app.spec.js › vídeo: o modo pede o microfone, grava, para, e salva como webm"
+      ],
+      "evidencia": "O teste confere só que a pílula aparece; o formato mm:ss não tem teste: app src/Camera.vue:148-151,550-554, igual a antes, dentro do RoqueOS."
+    },
+    {
+      "o_que": "Ver a foto ou o vídeo capturado antes de decidir (vídeo com controles, em loop)",
+      "estado": "mantida",
+      "testes": [
+        "test/app.spec.js › foto: tira, mostra, e salva nas Imagens com o nome de sempre, e a métrica conta",
+        "test/app.spec.js › vídeo: o modo pede o microfone, grava, para, e salva como webm"
+      ],
+      "evidencia": "O texto alternativo da foto era \"Câmera\", como antes, dentro do RoqueOS, e agora é \"Foto\" (app src/Camera.vue:56-70)."
+    },
+    {
+      "o_que": "Descartar a captura e voltar à imagem ao vivo",
+      "estado": "mantida",
+      "testes": [
+        "test/useCamera.spec.js › retake revokes a blob url and clears the capture",
+        "test/app.spec.js › descartar volta para a imagem ao vivo sem salvar nada"
+      ]
+    },
+    {
+      "o_que": "Baixar a captura para o aparelho, com o aviso de sucesso",
+      "estado": "mantida",
+      "evidencia": "Sem teste, nem antes: app src/Camera.vue:211-219,567-574, com o mesmo nome de arquivo de antes, dentro do RoqueOS. A duração e o nome do app no aviso estão na linha dos avisos."
+    },
+    {
+      "o_que": "Salvar a foto ou o vídeo nas Imagens e voltar à imagem ao vivo",
+      "estado": "mantida",
+      "testes": [
+        "test/app.spec.js › foto: tira, mostra, e salva nas Imagens com o nome de sempre, e a métrica conta",
+        "test/app.spec.js › vídeo: o modo pede o microfone, grava, para, e salva como webm"
+      ],
+      "evidencia": "Os testes rodam contra o sistema falso do SDK. No RoqueOS, conferido lendo o código: o envio de arquivo do RoqueOS chama o mesmo armazenamento de antes, com o mesmo dono da conta e os mesmos nomes (RoqueOS_Photo_<ms>.jpg, RoqueOS_Video_<ms>.webm): as fotos de antes e as novas ficam lado a lado. O QA qa-g28-camera no dist do RoqueOS salvou e mostrou o aviso com o nome \"Câmera\"; o doc da onda lista o salvar com o armazenamento de verdade como não verificado."
+    },
+    {
+      "o_que": "Salvar vídeo grande nas Imagens",
+      "estado": "mantida",
+      "evidencia": "O vídeo passa pelo conferirArquivo do SDK antes do upload (app src/Camera.vue:581-586), como no envio de arquivo do RoqueOS, e o conferirArquivo não tem teto de tamanho (app-sdk src/arquivos.js: confere nome, tipo e pasta, conferido em 28/09). O upload é o mesmo envio de antes, com a mesma cota da conta. Não medido com um vídeo de 2 minutos em 1080p."
+    },
+    {
+      "o_que": "Ver os avisos de salvar, baixar e erro, com o nome do app e o título",
+      "estado": "mudou",
+      "testes": [
+        "test/app.spec.js › foto: tira, mostra, e salva nas Imagens com o nome de sempre, e a métrica conta"
+      ],
+      "nota": "O aviso fica 5 s, o padrão do aviso do RoqueOS, e não mais 3 s: fica mais tempo, e nenhum some antes da hora. O nome do app vem do registro pelo sistema, e não mais do texto da Câmera.",
+      "evidencia": "O teste confere mensagem, tipo e título do aviso de salvar, não a duração. O padrão do aviso do RoqueOS é 5000 ms; antes era 3000 ms, dentro do RoqueOS. O nome do app no aviso vem do registro do RoqueOS, em produção desde o build 2562 (hotfix 2562, medido com QR Code, Notas e Xadrez); com a Câmera, medido no QA qa-g28-camera no dist do RoqueOS."
+    },
+    {
+      "o_que": "Tentar salvar sem estar na conta",
+      "estado": "mudou",
+      "testes": [
+        "test/app.spec.js › sem conta, salvar avisa que precisa entrar, a foto fica na tela e nada é gravado"
+      ],
+      "nota": "Antes tentava gravar como guest e sempre falhava: a pessoa via \"Erro ao salvar\". Agora vê \"Entre na sua conta para salvar em Arquivos.\", e a captura fica na tela para baixar ou compartilhar. Melhora; nada se perde.",
+      "evidencia": "O envio de antes, dentro do RoqueOS, já não passava sem conta: o envio de arquivo do RoqueOS exige conta, e a regra do armazenamento só deixa o dono gravar na pasta dele."
+    },
+    {
+      "o_que": "Tocar na galeria sem estar na conta",
+      "estado": "mudou",
+      "nota": "Antes abria o Finder nas Imagens, que para convidado não lista nada; agora não abre e avisa \"Entre na sua conta para salvar em Arquivos.\", texto que fala em salvar, e não no que a pessoa tentou.",
+      "evidencia": "Pelo código, sem teste: antes, dentro do RoqueOS, abria sempre, e o Finder do RoqueOS mostra a pasta vazia para quem não entrou; agora app src/Camera.vue:616-623 pede conta antes de abrir (arquivos.abrirPasta do app-sdk)."
+    },
+    {
+      "o_que": "Ver a miniatura da última foto e abrir as Imagens no Finder pela galeria",
+      "estado": "mantida",
+      "testes": [
+        "test/app.spec.js › a galeria abre as Imagens no Finder, e diz isso com o nome da pasta"
+      ],
+      "evidencia": "O teste roda com o sistema falso; no RoqueOS, o sistema abre a janela do Finder nas Imagens, como antes, e o QA qa-g28-camera no dist abriu o Finder nas Imagens. A miniatura não tem teste (app src/Camera.vue:179, src/useCamera.js:75,253). O nome da galeria para o leitor de tela era \"Câmera\" e agora é \"Imagens\"."
+    },
+    {
+      "o_que": "Compartilhar a captura (com o arquivo; sem suporte, baixa; cancelar não baixa)",
+      "estado": "mantida",
+      "evidencia": "Sem teste, nem antes: app src/Camera.vue:602-614, igual a antes, dentro do RoqueOS. Não medido no Safari do iPhone."
+    },
+    {
+      "o_que": "Ver o aviso de permissão negada, com a ajuda e o Tentar novamente",
+      "estado": "mantida",
+      "testes": [
+        "test/app.spec.js › permissão negada: o visor diz o que houve e como liberar, e tentar de novo pede outra vez",
+        "test/useCamera.spec.js › maps a denied permission to status \"denied\""
+      ]
+    },
+    {
+      "o_que": "Ver o que houve quando a câmera está ocupada, não existe ou o navegador não dá acesso a ela",
+      "estado": "mudou",
+      "testes": ["test/app.spec.js › câmera indisponível por outro motivo também diz o que houve"],
+      "nota": "Antes o visor ficava preto e mudo: o estado de erro só aparecia quando o motor preenchia o erro, o que nunca acontecia, embora os textos existissem. Agora mostra \"Câmera indisponível\" com \"Tentar novamente\". Melhora; nada se perde.",
+      "evidencia": "antes, dentro do RoqueOS; app src/Camera.vue:506-521."
+    },
+    {
+      "o_que": "Ver que a câmera está iniciando, com a barra de carregando",
+      "estado": "mantida",
+      "testes": [
+        "test/app.spec.js › iniciando, o visor diz o que acontece com a barra que corre, parada no perfil leve",
+        "test/app.spec.js › ao vivo, e na falha, a barra do carregando sai"
+      ],
+      "evidencia": "O carregando de antes, dentro do RoqueOS (estado loading), tinha uma barra que corre; o RosVazio do kit ganhou carregando no ui v0.5.0, com o mesmo texto \"Iniciando câmera...\", e a barra fica parada no perfil leve. O teste antigo, do front, sobre esse carregando saiu junto com a saída do app; os dois testes novos do app o substituem."
+    },
+    {
+      "o_que": "Desligar a câmera ao fechar a janela",
+      "estado": "mantida",
+      "testes": [
+        "test/useCamera.spec.js › stops tracks on unmount",
+        "test/app.spec.js › fechar a janela desliga a câmera e solta o ouvinte do idioma"
+      ],
+      "evidencia": "QA qa-g28-camera no dist do RoqueOS: fechar a janela leva a trilha de live para ended, com a câmera falsa do Chromium."
+    },
+    {
+      "o_que": "Abrir a Câmera de novo leva à janela que já está aberta",
+      "estado": "mantida",
+      "evidencia": "O sinal de janela única da entrada de antes, dentro do RoqueOS, nunca foi lido por nada no RoqueOS: a janela do RoqueOS abre uma só por app por padrão, e só um punhado de apps abre várias. Conferido no código; sem teste no app."
+    },
+    {
+      "o_que": "Janela de 800×600 com o ícone, a cor e a categoria mídia, e a Câmera na Loja",
+      "estado": "mantida",
+      "testes": [
+        "test/app.spec.js › o id e as capacidades são os do manifesto, e o manifesto é válido"
+      ],
+      "evidencia": "O registro de apps do RoqueOS leva nameKey, icon, color, category, showInStore, description e windowConfig do app.json (app app.json:29-37). Mesmo id camera, mesmo ícone photo_camera, cor #10b981, categoria media e 800×600 do bloco de antes, dentro do RoqueOS; ganhou tamanho mínimo de 360×420. O QA qa-g28-camera no dist abriu a Câmera pelo Spotlight."
+    },
+    {
+      "o_que": "Ver o nome do app nos 10 idiomas e a descrição na Loja",
+      "estado": "mantida",
+      "testes": [
+        "test/app.spec.js › o id e as capacidades são os do manifesto, e o manifesto é válido"
+      ],
+      "evidencia": "Os nomes são os de antes, dentro do RoqueOS (app app.json:5-16). A descrição, que estava em inglês em 8 idiomas, agora está traduzida nos 10 (app app.json:17-28)."
+    },
+    {
+      "o_que": "Ler os textos da tela nos 10 idiomas",
+      "estado": "mantida",
+      "testes": [
+        "test/textos.spec.js › há um JSON por idioma, e só os dez",
+        "test/textos.spec.js › a tela pede chaves, e o mapa da grade foi lido"
+      ],
+      "evidencia": "O textos.spec tem um teste por idioma (<idioma>: tem toda chave que a tela pede, e nenhuma a mais) nos 10. Comparado por script na auditoria: as 25 chaves que a tela de antes usava têm o mesmo valor (as chaves da grade viraram gridNone, gridThirds e gridPhi); só saiu showGrid, que a tela de antes não usava. Os textos comuns do app (comum*) não foram comparados com os valores de antes, dentro do RoqueOS."
+    },
+    {
+      "o_que": "Trocar o idioma com a janela aberta",
+      "estado": "mantida",
+      "testes": ["test/app.spec.js › a troca de idioma com a janela aberta troca o texto"],
+      "evidencia": "O QA qa-g28-camera no dist trocou ao vivo para en-US, e o QA do yarn dev em Chromium passou pelo árabe. O RTL não tem teste no app."
+    },
+    {
+      "o_que": "Tela compacta no celular ou em janela estreita (sem os rótulos do modo, disparador e galeria menores)",
+      "estado": "mudou",
+      "nota": "Antes compactava pela largura da página (@media até 768 px); agora pela largura da janela (@container até 560 px). Tablet em retrato com a janela cheia (561 a 768 px) deixa de compactar; iPhone com iOS abaixo de 16, sem @container, nunca compacta; janela pequena na mesa passa a compactar.",
+      "evidencia": "antes, dentro do RoqueOS; app src/camera.scss:549-570. Sem teste; o QA do yarn dev em Chromium mediu a janela estreita; não medido no tablet nem no iPhone."
+    },
+    {
+      "o_que": "Deixar o disparador acima da barra de gestos do iPhone",
+      "estado": "mantida",
+      "testes": [
+        "test/estilo.spec.js › a margem de baixo do celular usa a do RoqueOS, com o env() só de reserva"
+      ],
+      "evidencia": "Voltou a usar var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)), como antes, dentro do RoqueOS: o RoqueOS congela essa variável no app nativo porque o env() zera com a folha e com o teclado. Não medido no iPhone."
+    },
+    {
+      "o_que": "Tocar no visor sem rolar a página, e vídeo na própria tela no iOS",
+      "estado": "mantida",
+      "evidencia": "app src/camera.scss:132 (touch-action: none) e src/Camera.vue:49 (playsinline), iguais ao comportamento de antes, dentro do RoqueOS. Sem teste; não medido no iPhone."
+    },
+    {
+      "o_que": "Visual leve no perfil leve (malha parada, contagem sem pulsar)",
+      "estado": "mudou",
+      "testes": ["test/app.spec.js › perfil leve: sem a malha animada e sem desfoque"],
+      "nota": "O app lê o perfil leve uma vez, ao abrir (app src/index.js:30): ligar ou desligar em Ajustes com a Câmera aberta só vale ao reabrir; antes, dentro do RoqueOS, reagia na hora, ao vivo, quando o Ajuste mudava. O perfil leve agora também tira o desfoque. O contrato 0.2/0.3 do SDK não tem desempenho.aoMudar; reagir ao vivo pede capacidade nova, registrada para a 0.4.0.",
+      "evidencia": "O teste confere só a classe camera--leve; o visual está em app src/camera.scss:52-65 (malha parada a 0,5, contagem sem pulsar, sem desfoque), como antes, dentro do RoqueOS."
+    },
+    {
+      "o_que": "Ver a malha de cor animada ao fundo",
+      "estado": "mantida",
+      "evidencia": "app src/camera.scss:67-83, igual a antes, dentro do RoqueOS. Sem teste."
+    },
+    {
+      "o_que": "Seguir o tema do sistema (cores, desfoque, raio e transição)",
+      "estado": "mudou",
+      "nota": "As cores continuam vindo das variáveis do tema (--ros-*-rgb do contrato, com a reserva do tema padrão); o desfoque (20px), o raio (12px) e a transição (200ms) agora são fixos, e um tema que ajuste esses três não chega mais à Câmera. As duas cores próprias de antes viraram --camera-fora-da-proporcao e --camera-tinta-escura, com os mesmos valores, e saíram do alcance do tema.",
+      "evidencia": "app src/camera.scss:13-28 contra o tema de antes, dentro do RoqueOS (o desfoque, o raio e a transição vinham de tokens do tema que a Câmera lia direto). Sem teste; não medido no tema claro."
+    },
+    {
+      "o_que": "Contar cada foto tirada na métrica (photo_capture)",
+      "estado": "mantida",
+      "testes": [
+        "test/useCamera.spec.js › avisa a métrica uma vez por foto tirada, e nenhuma sem quadro",
+        "test/app.spec.js › foto: tira, mostra, e salva nas Imagens com o nome de sempre, e a métrica conta"
+      ],
+      "evidencia": "Mesmo evento e mesmo appId: o sistema de métricas do RoqueOS registra a captura, como antes, dentro do RoqueOS. O vídeo nunca teve métrica."
+    },
+    {
+      "o_que": "Usar com leitor de tela, e ver a dica ao passar o mouse nos botões",
+      "estado": "mantida",
+      "testes": [
+        "test/app.spec.js › abre a câmera traseira, com a barra no idioma e os botões que o aparelho sustenta",
+        "test/app.spec.js › a galeria abre as Imagens no Finder, e diz isso com o nome da pasta",
+        "test/app.spec.js › permissão negada: o visor diz o que houve e como liberar, e tentar de novo pede outra vez",
+        "test/app.spec.js › o temporizador conta até zero e só então fotografa"
+      ],
+      "evidencia": "Tudo que existia (title e aria-label nos botões, aria-hidden nas camadas do visor; antes, dentro do RoqueOS) continua, e ganhou aria-pressed, role status e alert, aria-live na contagem e foco visível. A dica ao passar o mouse vem do RosBotao do kit, que põe title igual ao rótulo (ui/src/RosBotao.vue:11)."
+    },
+    {
+      "o_que": "Pré-carga do app antes de abrir",
+      "estado": "mantida",
+      "evidencia": "A pré-carga do RoqueOS ganhou uma entrada gerada para a Câmera na saída; antes a entrada era direta na pré-carga do RoqueOS. O JSON do idioma baixa à parte, ao montar. Sem teste no app."
+    }
+  ]
+}

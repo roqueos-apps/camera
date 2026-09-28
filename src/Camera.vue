@@ -80,6 +80,8 @@
             :titulo="tituloDoEstado"
             :subtitulo="subtituloDoEstado"
             :acento="ACENTO"
+            :carregando="cam.isLoading.value"
+            :leve="estado.leve"
           />
           <p v-if="cam.permissionDenied.value" class="camera__ajuda">{{ t('permissionHelp') }}</p>
           <RosBotao

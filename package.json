@@ -1,6 +1,6 @@
 {
   "name": "@roqueos-apps/camera",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "A Câmera do RoqueOS: fotos e vídeos com a câmera do aparelho, zoom, lanterna, temporizador, proporção, grade e nível, salvos nas Imagens dos Arquivos, nos dez idiomas do sistema.",
   "license": "MIT",
@@ -18,6 +18,7 @@
     "src",
     "i18n",
     "app.json",
+    "paridade.json",
     "ASSETS.md",
     "LICENSE",
     "README.md"
@@ -37,7 +38,7 @@
   },
   "dependencies": {
     "@roqueos-apps/app-sdk": "github:roqueos-apps/app-sdk#e175bd1d6733e36185a48a4926bf922720ef6005",
-    "@roqueos-apps/ui": "git+ssh://git@github.com/roqueos-apps/ui.git#v0.4.0"
+    "@roqueos-apps/ui": "git+ssh://git@github.com/roqueos-apps/ui.git#v0.6.0"
   },
   "peerDependencies": {
     "vue": "^3.5.0"
