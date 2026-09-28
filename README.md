@@ -9,6 +9,8 @@ RoqueOS.
 
 Use de graça em [roqueos.com.br](https://roqueos.com.br), no computador, no celular e na TV.
 
+![A Câmera do RoqueOS: a imagem ao vivo com a grade, o zoom, o obturador e a troca entre foto e vídeo](docs/capa.jpg)
+
 _English below._
 
 ## Por que existe como repo
