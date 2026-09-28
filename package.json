@@ -1,6 +1,6 @@
 {
   "name": "@roqueos-apps/camera",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": true,
   "description": "A Câmera do RoqueOS: fotos e vídeos com a câmera do aparelho, zoom, lanterna, temporizador, proporção, grade e nível, salvos nas Imagens dos Arquivos, nos dez idiomas do sistema.",
   "license": "MIT",

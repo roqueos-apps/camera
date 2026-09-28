@@ -132,6 +132,8 @@ describe('a Câmera pelo app-sdk', () => {
     const f = montar()
     await vi.waitFor(() => expect(f.el.querySelector('.rui-vazio__barra')).not.toBeNull())
     expect(f.texto()).toContain('Iniciando câmera...')
+    // Uma vez só: antes o título e o subtítulo repetiam a frase.
+    expect(f.texto().match(/Iniciando câmera/g)).toHaveLength(1)
     expect(f.el.querySelector('.rui-vazio__barra--parada')).toBeNull()
     f.montagem.desmontar()
 

@@ -512,13 +512,14 @@ const iconeDoEstado = computed(() => {
   if (cam.isLoading.value) return 'photo_camera'
   return cam.permissionDenied.value ? 'no_photography' : 'videocam_off'
 })
+// Iniciando, uma frase só: o título e o subtítulo diziam "Iniciando câmera" duas vezes.
 const tituloDoEstado = computed(() => {
-  if (cam.isLoading.value) return t('loadingTitle')
+  if (cam.isLoading.value) return t('startingCamera')
   if (cam.permissionDenied.value) return t('permissionDenied')
   return t('errorTitle')
 })
 const subtituloDoEstado = computed(() => {
-  if (cam.isLoading.value) return t('startingCamera')
+  if (cam.isLoading.value) return ''
   return cam.permissionDenied.value ? '' : t('errorStarting')
 })
 

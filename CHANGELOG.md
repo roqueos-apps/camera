@@ -3,13 +3,21 @@
 O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o projeto
 usa [versionamento semântico](https://semver.org/lang/pt-BR/).
 
-## [0.1.2] - 2026-09-28
+## [0.1.3] - 2026-09-28
+
+### Corrigido
+
+- Iniciando, o visor dizia a mesma frase duas vezes, no título ("Iniciando câmera") e embaixo
+  ("Iniciando câmera..."). Agora diz uma vez, como o carregando de antes, dentro do RoqueOS. Achado
+  no QA do build que ia instalar a 0.1.2, que por isso não foi instalada.
+
+## [0.1.2] - não instalada: a 0.1.3 saiu antes do deploy
 
 ### Mudado
 
 - O SDK pinado na tag `v0.3.0` do `app-sdk`, que está na `main`, no lugar do commit do PR #5.
   O código do SDK que o app usa é o mesmo: entre os dois só mudaram o CHANGELOG e o
-  `tag-na-main` do próprio SDK. É esta a versão que o RoqueOS pina.
+  `tag-na-main` do próprio SDK.
 
 ## [0.1.1] - não instalada: pinava o SDK num commit do PR #5
 
@@ -40,8 +48,8 @@ se perdesse na saída do núcleo.
 A Câmera sai do RoqueOS para o próprio repositório, falando com ele pelo `app-sdk` 0.3.0 e
 desenhada com o kit `ui` 0.4.0. Para quem usa, as fotos e os vídeos continuam indo para as
 Imagens, com o mesmo nome de arquivo. A `v0.1.0` pina o SDK num commit do PR #5 do
-`app-sdk`; quando a 0.3.0 tiver a tag dela na `main`, sai a versão pinada nela, e é
-essa que ganha data: a 0.1.2.
+`app-sdk`; ganha data a primeira versão que o RoqueOS instala, pinada na tag da 0.3.0: a
+0.1.3.
 
 ### Mudado
 
