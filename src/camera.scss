@@ -1,0 +1,625 @@
+// O visual da Câmera.
+//
+// As cores do tema vêm só das variáveis do contrato do app-sdk (`--ros-text-rgb`,
+// `--ros-fill-rgb`, `--ros-line-rgb`, `--ros-surface-0-rgb`, `--ros-scrim-rgb`,
+// `--ros-shadow-rgb`, `--ros-danger-rgb`, `--ros-white-rgb`, `--ros-text-100`), sempre com o
+// valor de reserva do tema padrão, para o `yarn dev` ficar igual ao RoqueOS. As cores que são da
+// Câmera usam o prefixo `--camera-`: o `--ros-` é do sistema, e o `app check` reprova declarar
+// um. O visor é preto de propósito, nos dois temas: é onde se enquadra.
+//
+// A janela muda de largura sem a página mudar (a mesa tem janelas pequenas num monitor largo),
+// então o que encolhe na janela estreita vai por `@container`, e não por `@media`.
+
+.camera {
+  --camera-fundo: rgba(var(--ros-surface-0-rgb, 30, 30, 30), 0.8);
+  --camera-superficie: rgba(var(--ros-surface-0-rgb, 30, 30, 30), 0.65);
+  --camera-texto: rgba(var(--ros-text-rgb, 255, 255, 255), 0.95);
+  --camera-texto-2: rgba(var(--ros-text-rgb, 255, 255, 255), 0.72);
+  --camera-texto-3: rgba(var(--ros-text-rgb, 255, 255, 255), 0.62);
+  --camera-borda: rgba(var(--ros-line-rgb, 255, 255, 255), 0.08);
+  --camera-borda-2: rgba(var(--ros-line-rgb, 255, 255, 255), 0.12);
+  --camera-vidro: rgba(var(--ros-fill-rgb, 255, 255, 255), 0.1);
+  --camera-realce: rgba(var(--ros-fill-rgb, 255, 255, 255), 0.15);
+  --camera-perigo: rgb(var(--ros-danger-rgb, 255, 59, 48));
+  --camera-desfoque: blur(20px);
+  --camera-transicao: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  // A faixa escura fora da proporção escolhida, e o texto escuro sobre o verde do salvar.
+  --camera-fora-da-proporcao: rgba(0, 0, 0, 0.5);
+  --camera-tinta-escura: #062b1d;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  container-type: inline-size;
+  color: var(--camera-texto);
+  background: var(--camera-fundo);
+  // O app não herda o box-sizing do Quasar fora do RoqueOS: declara o dele.
+  box-sizing: border-box;
+  font-family: inherit;
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: inherit;
+  }
+
+  button {
+    font: inherit;
+  }
+
+  // O perfil leve do RoqueOS (aparelho fraco): sem a malha animada, sem desfoque e sem a
+  // pulsação da contagem.
+  &--leve {
+    --camera-desfoque: none;
+
+    .camera__malha {
+      animation: none;
+      opacity: 0.5;
+    }
+
+    .camera__contagem {
+      animation: none;
+    }
+  }
+
+  &__malha {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(
+        ellipse 80% 60% at 50% -10%,
+        rgba(var(--camera-acento-rgb), 0.18),
+        transparent 60%
+      ),
+      radial-gradient(
+        ellipse 100% 80% at 30% 110%,
+        rgba(var(--camera-acento-rgb), 0.1),
+        transparent 70%
+      );
+    animation: camera-malha 19s ease-in-out infinite alternate;
+  }
+
+  &__barra {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--camera-superficie);
+    backdrop-filter: var(--camera-desfoque);
+    -webkit-backdrop-filter: var(--camera-desfoque);
+    border-bottom: 1px solid var(--camera-borda);
+  }
+
+  &__marca {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+
+    .rui-icone {
+      color: var(--camera-acento);
+    }
+  }
+
+  &__espaco {
+    flex: 1;
+  }
+
+  &__principal {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  &__visor {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: rgb(var(--ros-scrim-rgb, 0, 0, 0));
+    touch-action: none;
+  }
+
+  &__video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.18s ease;
+  }
+
+  &__previa {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  &__estado {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 24px;
+    text-align: center;
+    background: var(--camera-fundo);
+  }
+
+  &__ajuda {
+    margin: 0;
+    max-width: 280px;
+    font-size: 12px;
+    color: var(--camera-texto-3);
+  }
+
+  &__mascara {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    // Escurece o lado de fora da proporção escolhida (as barras dos lados, aproximadas).
+    background: linear-gradient(
+      to right,
+      var(--camera-fora-da-proporcao) 0,
+      var(--camera-fora-da-proporcao) calc((100% - 100% * var(--camera-proporcao, 0) / 1.7777) / 2),
+      transparent calc((100% - 100% * var(--camera-proporcao, 0) / 1.7777) / 2),
+      transparent calc(100% - (100% - 100% * var(--camera-proporcao, 0) / 1.7777) / 2),
+      var(--camera-fora-da-proporcao)
+        calc(100% - (100% - 100% * var(--camera-proporcao, 0) / 1.7777) / 2)
+    );
+  }
+
+  &__grade {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+
+    line {
+      stroke: rgba(var(--ros-white-rgb, 255, 255, 255), 0.32);
+      stroke-width: 0.4;
+      vector-effect: non-scaling-stroke;
+    }
+  }
+
+  &__nivel {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  &__nivel-barra {
+    width: 96px;
+    height: 2px;
+    border-radius: 2px;
+    background: rgba(var(--ros-white-rgb, 255, 255, 255), 0.6);
+    transition: transform 0.08s linear;
+
+    &--reto {
+      background: var(--camera-acento);
+      box-shadow: 0 0 10px rgba(var(--camera-acento-rgb), 0.7);
+    }
+  }
+
+  &__foco {
+    position: absolute;
+    width: 72px;
+    height: 72px;
+    margin: -36px 0 0 -36px;
+    border: 2px solid var(--camera-acento);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: camera-foco 0.9s ease-out;
+  }
+
+  &__selo-zoom {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    padding: 3px 10px;
+    border-radius: 14px;
+    background: rgba(var(--ros-scrim-rgb, 0, 0, 0), 0.5);
+    backdrop-filter: var(--camera-desfoque);
+    -webkit-backdrop-filter: var(--camera-desfoque);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--camera-acento);
+  }
+
+  &__contagem {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 120px;
+    font-weight: 800;
+    color: var(--ros-text-100, #fff);
+    text-shadow: 0 4px 24px rgba(var(--ros-shadow-rgb, 0, 0, 0), 0.6);
+    animation: camera-pulso 1s ease-in-out infinite;
+  }
+
+  &__flash {
+    position: absolute;
+    inset: 0;
+    background: rgb(var(--ros-fill-rgb, 255, 255, 255));
+    animation: camera-flash 0.15s ease-out;
+  }
+
+  &__gravando {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: rgba(var(--ros-scrim-rgb, 0, 0, 0), 0.55);
+    backdrop-filter: var(--camera-desfoque);
+    -webkit-backdrop-filter: var(--camera-desfoque);
+    font-size: 13px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__gravando-ponto {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--camera-perigo);
+    animation: camera-piscar 1s infinite;
+  }
+
+  &__zoom {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 24px;
+    color: var(--camera-texto-2);
+  }
+
+  &__faixa {
+    flex: 1;
+    min-width: 0;
+    accent-color: var(--camera-acento);
+    cursor: pointer;
+  }
+
+  &__controles {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    padding: 20px 24px;
+    padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    background: var(--camera-superficie);
+    backdrop-filter: var(--camera-desfoque);
+    -webkit-backdrop-filter: var(--camera-desfoque);
+    border-top: 1px solid var(--camera-borda);
+  }
+
+  &__galeria {
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border-radius: 12px;
+    background: var(--camera-vidro);
+    border: 1px solid var(--camera-borda-2);
+    overflow: hidden;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--camera-texto-2);
+    transition: border-color var(--camera-transicao);
+
+    &:hover {
+      border-color: rgba(var(--camera-acento-rgb), 0.6);
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  // O disparador é um controle próprio da Câmera, de propósito.
+  &__disparador {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    border: 4px solid rgb(var(--ros-white-rgb, 255, 255, 255));
+    background: transparent;
+    cursor: pointer;
+    padding: 4px;
+    transition: transform var(--camera-transicao);
+
+    &:hover:not(:disabled) {
+      transform: scale(1.05);
+    }
+
+    &:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    &-miolo {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: rgb(var(--ros-fill-rgb, 255, 255, 255));
+      transition: all var(--camera-transicao);
+    }
+
+    &--video .camera__disparador-miolo {
+      background: var(--camera-perigo);
+    }
+
+    &--gravando {
+      border-color: var(--camera-perigo);
+
+      .camera__disparador-miolo {
+        width: 28px;
+        height: 28px;
+        margin: auto;
+        border-radius: 7px;
+        background: var(--camera-perigo);
+      }
+    }
+  }
+
+  &__acoes {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  &__acao {
+    width: 54px;
+    height: 54px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid var(--camera-borda-2);
+    background: var(--camera-vidro);
+    color: var(--camera-texto);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--camera-transicao);
+
+    &:hover {
+      background: var(--camera-realce);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: progress;
+    }
+
+    &--descartar:hover {
+      background: rgba(var(--ros-danger-rgb, 255, 59, 48), 0.85);
+      border-color: transparent;
+    }
+
+    &--salvar {
+      background: var(--camera-acento);
+      border-color: transparent;
+      color: var(--camera-tinta-escura);
+
+      &:hover {
+        background: var(--camera-acento);
+        filter: brightness(1.08);
+      }
+    }
+  }
+
+  &__modo {
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 12px;
+    background: var(--camera-vidro);
+
+    button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--camera-texto-3);
+      cursor: pointer;
+      transition: all var(--camera-transicao);
+
+      span {
+        font-size: 11px;
+        font-weight: 600;
+      }
+
+      &:hover:not(.camera__modo--ativo) {
+        color: var(--camera-texto);
+      }
+    }
+
+    // O botão do modo em uso (o `button` escrito junto é o que dá a força para passar a regra
+    // de cima).
+    button.camera__modo--ativo {
+      background: rgba(var(--camera-acento-rgb), 0.18);
+      color: var(--camera-acento);
+    }
+  }
+
+  button:focus-visible,
+  input:focus-visible {
+    outline: 2px solid var(--camera-acento);
+    outline-offset: 2px;
+  }
+
+  // --- a folha de ajustes -------------------------------------------------------------------
+  &__ajustes {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  &__ajuste {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    &--linha {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+  }
+
+  &__ajuste-rotulo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--camera-texto);
+
+    .rui-icone {
+      color: var(--camera-texto-2);
+    }
+  }
+
+  &__opcoes {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+
+    button {
+      padding: 7px 14px;
+      border: 1px solid var(--camera-borda);
+      border-radius: 8px;
+      background: var(--camera-vidro);
+      color: var(--camera-texto-2);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--camera-transicao);
+
+      &:hover:not(.camera__opcao--ativa) {
+        background: var(--camera-realce);
+      }
+    }
+
+    button.camera__opcao--ativa {
+      background: rgba(var(--camera-acento-rgb), 0.18);
+      border-color: rgba(var(--camera-acento-rgb), 0.55);
+      color: var(--camera-acento);
+    }
+  }
+
+  &__tela-oculta {
+    display: none;
+  }
+}
+
+// A janela estreita (o celular, ou uma janela pequena na mesa).
+@container (max-width: 560px) {
+  .camera__controles {
+    gap: 16px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .camera__modo button span {
+    display: none;
+  }
+
+  .camera__disparador {
+    width: 64px;
+    height: 64px;
+  }
+
+  .camera__galeria {
+    width: 42px;
+    height: 42px;
+  }
+}
+
+@keyframes camera-malha {
+  0% {
+    opacity: 0.85;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, -2%, 0) scale(1.04);
+  }
+}
+
+@keyframes camera-pulso {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.12);
+  }
+}
+
+@keyframes camera-flash {
+  0% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes camera-piscar {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes camera-foco {
+  0% {
+    opacity: 0;
+    transform: scale(1.4);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "id": "camera",
+  "versaoDoContrato": 1,
+  "camada": "primeira-parte",
+  "nome": {
+    "pt-BR": "Câmera",
+    "en-US": "Camera",
+    "es-ES": "Cámara",
+    "fr-FR": "Caméra",
+    "de-DE": "Kamera",
+    "ja-JP": "カメラ",
+    "zh-CN": "相机",
+    "hi-IN": "कैमरा",
+    "ru-RU": "Камера",
+    "ar-AR": "الكاميرا"
+  },
+  "descricao": {
+    "pt-BR": "Tire fotos e grave vídeos",
+    "en-US": "Take photos and record videos",
+    "es-ES": "Toma fotos y graba videos",
+    "fr-FR": "Prenez des photos et filmez des vidéos",
+    "de-DE": "Fotos aufnehmen und Videos drehen",
+    "ja-JP": "写真を撮って動画を録画",
+    "zh-CN": "拍照和录制视频",
+    "hi-IN": "फ़ोटो लें और वीडियो रिकॉर्ड करें",
+    "ru-RU": "Снимайте фото и записывайте видео",
+    "ar-AR": "التقط الصور وسجّل مقاطع الفيديو"
+  },
+  "icone": "photo_camera",
+  "cor": "#10b981",
+  "categoria": "media",
+  "janela": {
+    "largura": 800,
+    "altura": 600,
+    "minLargura": 360,
+    "minAltura": 420
+  },
+  "capacidades": ["arquivos"],
+  "pastas": ["Imagens"],
+  "autor": "Roque Ribeiro",
+  "licenca": "MIT"
+}
