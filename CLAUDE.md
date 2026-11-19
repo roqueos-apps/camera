@@ -1,7 +1,8 @@
 # Câmera
 
 App da organização roqueos-apps, montado pelo RoqueOS através do `app-sdk`. Leia o README
-antes de mudar qualquer coisa.
+antes de mudar qualquer coisa; o resto da documentação começa em `docs/INDEX.md` (en, com o par
+pt-BR em `docs/pt-BR/`, declarado em `docs/docs.json`).
 
 - Gate: `yarn verificar` (o mesmo do CI e do pre-push).
 - O app só importa `vue`, `@roqueos-apps/app-sdk`, `@roqueos-apps/ui` e arquivo deste repo. O
