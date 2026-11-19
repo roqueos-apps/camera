@@ -1,145 +1,80 @@
-# Câmera
+# Camera
 
-A Câmera do [RoqueOS](https://roqueos.com.br): fotos e vídeos com a câmera do aparelho, com
-zoom (o do aparelho, ou por recorte quando ele não tem), lanterna, troca entre as câmeras,
-temporizador de 3, 5 ou 10 segundos, proporção (cheia, 1:1, 4:3, 16:9), resolução de 480p a
-4K, grade de terços ou áurea, espelho da câmera frontal e nível. A foto ou o vídeo vai para as
-Imagens dos Arquivos, para o download ou para o compartilhar do aparelho. Nos dez idiomas do
-RoqueOS.
+_[Português](README.pt-BR.md) | English_
 
-Use de graça em [roqueos.com.br](https://roqueos.com.br), no computador, no celular e na TV.
+The Camera of [RoqueOS](https://roqueos.com.br): photos and videos with the device camera, with zoom (the device's own, or by cropping when it has none), torch, camera switching, a 3, 5 or 10 second timer, aspect ratio (full, 1:1, 4:3, 16:9), resolution from 480p to 4K, rule-of-thirds or golden grid, front camera mirroring and a level. The photo or video goes to Pictures in Files, to a download, or to the device's share sheet. In all ten RoqueOS languages.
 
-![A Câmera do RoqueOS: a imagem ao vivo com a grade, o zoom, o obturador e a troca entre foto e vídeo](docs/capa.jpg)
+Free to use at [roqueos.com.br](https://roqueos.com.br), on the computer, the phone and the TV.
 
-_English below._
+![The RoqueOS Camera: the live image with the grid, the zoom, the shutter and the photo and video switch](docs/capa.jpg)
 
-## Por que existe como repo
+## Why it is its own repository
 
-A Câmera nasceu dentro do RoqueOS, que é fechado. Em 28/09/2026 ela foi para o próprio
-repositório na organização [roqueos-apps](https://github.com/roqueos-apps), na Onda 4 do
-Goal 28. O RoqueOS a instala por uma tag, como dependência git, e ela fala com o RoqueOS só
-pelo [`app-sdk`](https://github.com/roqueos-apps/app-sdk). A tela é feita com o kit
-[`ui`](https://github.com/roqueos-apps/ui). O mesmo código roda dentro do RoqueOS, sozinho no
-navegador (`yarn dev`) e no teste.
+The Camera was born inside RoqueOS, which is closed. On 28/09/2026 it moved to its own repository in the [roqueos-apps](https://github.com/roqueos-apps) organization, in Wave 4 of Goal 28. RoqueOS installs it by tag, as a git dependency, and it talks to RoqueOS only through the [`app-sdk`](https://github.com/roqueos-apps/app-sdk). The screen is built with the [`ui`](https://github.com/roqueos-apps/ui) kit. The same code runs inside RoqueOS, alone in the browser (`yarn dev`) and in the tests.
 
-## Arquitetura
+## Architecture
 
 ```mermaid
 flowchart LR
-  N[Navegador<br/>getUserMedia, MediaRecorder]
+  N[Browser<br/>getUserMedia, MediaRecorder]
   subgraph RoqueOS
-    H[Sistema do app-sdk<br/>arquivos]
-    I[(Arquivos da pessoa:<br/>a pasta Imagens)]
+    H[app-sdk system<br/>arquivos]
+    I[(The person's Files:<br/>the Pictures folder)]
   end
-  C[Câmera<br/>Camera.vue + useCamera.js]
-  N -- a imagem ao vivo --> C
+  C[Camera<br/>Camera.vue + useCamera.js]
+  N -- the live image --> C
   H -- sistema --> C
-  C -- salvar, abrir as Imagens --> H
+  C -- save, open Pictures --> H
   H --> I
 ```
 
 ```text
-app.json            quem ela é: id permanente (camera), nome e descrição nos dez idiomas,
-                    ícone, cor, janela, a capacidade que pede e a pasta que ela abre
-i18n/<idioma>.json  os textos da tela, um arquivo por idioma
+app.json            who it is: permanent id (camera), name and description in ten languages,
+                    icon, colour, window, the capability it asks for and the folder it opens
+i18n/<language>.json  the screen texts, one file per language
 src/
-  index.js          definirApp: cria o app Vue próprio dentro do elemento que o RoqueOS dá
-  Camera.vue        a tela: o visor, o enquadramento, o disparador, a captura e os ajustes
-  useCamera.js      o motor: o MediaStream, a foto no canvas, o vídeo, o zoom e a lanterna
-  textos.js         carrega o JSON do idioma (com ?raw) e traduz uma chave
-  camera.scss       o visual
-dev/main.js         o yarn dev: a Câmera numa janela falsa do RoqueOS
-test/               Vitest: a tela pelo SDK, o motor, e as chaves de texto
+  index.js          definirApp: creates the app's own Vue app inside the element RoqueOS gives
+  Camera.vue        the screen: viewfinder, framing, shutter, the capture and the settings
+  useCamera.js      the engine: the MediaStream, the photo on canvas, video, zoom and torch
+  textos.js         loads the language JSON (with ?raw) and translates a key
+  camera.scss       the look
+dev/main.js         yarn dev: the Camera in a fake RoqueOS window
+test/               Vitest: the screen through the SDK, the engine, and the text keys
 ```
 
-### Como ela fala com o RoqueOS
+It talks to RoqueOS only through the SDK's `sistema`, with the optional capability declared in `app.json`. `arquivos`: `salvar` puts the photo (`image/jpeg`) or video (`video/webm`) in Pictures with the usual name (`RoqueOS_Photo_<time>.jpg`, `RoqueOS_Video_<time>.webm`); `abrirPasta` opens Pictures in the Finder, from the gallery button. The Camera declares `"pastas": ["Imagens"]`: it is the only folder it can open, and it never sees a path nor lists the person's files. It also uses `idioma`, `desempenho` (the light profile removes the animated mesh, the blur and the countdown pulse), `avisar` and `metricas` (the `photo_capture` event, the same as before).
 
-Só pelo `sistema` do SDK, e a capacidade opcional está no `app.json`:
+The camera and microphone it asks straight from the browser (`getUserMedia`), because the system mediates nothing there: the SDK has no `camera` capability. The microphone only comes in for video. Without an account the system refuses to save (`sem-conta`): the Camera says you need to sign in, the capture stays on screen, and download and share keep working. The live image goes nowhere; a capture leaves only when the person presses save, download or share, and closing the window turns the camera off.
 
-- `arquivos`: `salvar` põe a foto (`image/jpeg`) ou o vídeo (`video/webm`) nas Imagens, com o
-  nome de sempre (`RoqueOS_Photo_<hora>.jpg`, `RoqueOS_Video_<hora>.webm`); `abrirPasta` abre as
-  Imagens no Finder, pelo botão da galeria. A Câmera declara `"pastas": ["Imagens"]`: é a única
-  pasta que ela pode abrir, e ela nunca vê caminho nem lista os arquivos da pessoa.
-- `idioma`, `desempenho` (o perfil leve tira a malha animada, o desfoque e a pulsação da
-  contagem), `avisar` e `metricas` (o evento `photo_capture`, o mesmo de antes).
+## Getting started
 
-A câmera e o microfone ela pede direto ao navegador (`getUserMedia`), porque o sistema não
-media nada ali: o SDK não tem capacidade `camera`. O microfone só entra no modo vídeo.
-
-Sem conta, o sistema recusa salvar (`sem-conta`): a Câmera avisa que é preciso entrar, a
-captura continua na tela, e baixar e compartilhar continuam funcionando.
-
-### O que nunca sai do aparelho
-
-A imagem ao vivo não vai a lugar nenhum. A foto e o vídeo só saem quando a pessoa aperta
-salvar (para os Arquivos da conta dela), baixar ou compartilhar. Fechar a janela desliga a
-câmera, e a luz do aparelho apaga.
-
-## Pré-requisitos
-
-- Node 22 ou mais novo (o `.nvmrc` diz 24).
-- Yarn 1.22.
-
-## Como rodar
+You need Node 22 or newer (`.nvmrc` says 24) and Yarn 1.22.
 
 ```bash
 yarn install --ignore-scripts
-yarn dev          # a Câmera numa janela falsa do RoqueOS, numa conta local
-yarn verificar    # lint, formato, testes e app check: o mesmo do CI e do pre-push
-yarn test         # só os testes
+yarn dev          # the Camera in a fake RoqueOS window, on a local account
+yarn verificar    # lint, format, tests and app check: the same as CI and pre-push
+yarn test         # tests only
 ```
 
-O `yarn dev` pede a câmera de verdade ao navegador. O que se salva vai para Arquivos em
-memória e some no F5; o aviso de salvo aparece no console. A janela é redimensionável: abaixo
-de 560 px de largura os rótulos do modo somem e o disparador encolhe. `?idioma=ar-AR` abre em
-árabe, `?leve=1` como o aparelho fraco vê, `?convidado=1` sem conta.
+`yarn dev` asks the browser for the real camera. What you save goes to in-memory Files and is gone on F5. `?idioma=ar-AR` opens in Arabic, `?leve=1` as a weak device sees it, `?convidado=1` without an account. The step by step is in [docs/GETTING-STARTED.md](docs/GETTING-STARTED.md).
 
-## Paridade com o app de antes
+## Parity with the app from before
 
-`paridade.json` é o inventário do que a Câmera fazia dentro do RoqueOS e do que aconteceu com
-cada coisa na saída: `mantida`, `mudou` (com a nota do que mudou) ou `perdida` (só com a
-decisão escrita de quem decidiu). Cada item cita o teste deste repo que o prova, ou a
-evidência. O RoqueOS confere o arquivo no pacote instalado antes de aceitar a versão: teste
-citado que não existe mais, estado de dúvida ou perda sem decisão reprovam. Mudou uma
-funcionalidade, ou um teste citado ali? Atualize o inventário no mesmo commit.
+`paridade.json` is the inventory of what the Camera did inside RoqueOS and what happened to each item on the move out: `mantida` (kept), `mudou` (changed, with a note) or `perdida` (lost, only with a written decision). Each item cites the test in this repository that proves it, or the evidence; today 48 items, 41 kept, 7 changed, 0 lost. RoqueOS checks the file in the installed package before accepting a version. Changed a feature, or a test cited there? Update the inventory in the same commit.
 
-## Contribuir
+## Status and limits
 
-Leia o [CONTRIBUTING.md](CONTRIBUTING.md). Todo commit leva `Signed-off-by` (DCO), e o CI
-confere. Falha de segurança vai pelo [SECURITY.md](SECURITY.md), nunca por issue pública.
+On 18/11/2026 RoqueOS installs version 0.1.3 (the tag pinned in its `package.json`). The known limits, each with its source, are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#9-known-limits): the light profile is read only when the window opens, the focus ring is a gesture without focusing, a video is always labelled `video/webm`, and no automated test runs on a real camera.
 
-## Créditos e licença
+## Documentation
 
-[MIT](LICENSE). Os ícones são do [Material Icons](https://fonts.google.com/icons)
-(Apache-2.0), pelo kit de interface; veja o [ASSETS.md](ASSETS.md). O nome e a marca RoqueOS
-são da LEVELHARD e não fazem parte da licença.
+Start at the [documentation index](docs/INDEX.md). The documents: [getting started](docs/GETTING-STARTED.md), [architecture](docs/ARCHITECTURE.md), [reference](docs/REFERENCE.md), [operations](docs/OPERATIONS.md), [when it breaks](docs/WHEN-IT-BREAKS.md), [glossary](docs/GLOSSARY.md), [integrations](docs/INTEGRATIONS.md), [testing](docs/TESTING.md) and [threat model](docs/THREAT-MODEL.md).
 
----
+## Contributing
 
-## English
+Read [CONTRIBUTING.md](CONTRIBUTING.md). Every commit carries `Signed-off-by` (DCO), and CI checks it. A security flaw goes through [SECURITY.md](SECURITY.md), never a public issue.
 
-The Camera app of [RoqueOS](https://roqueos.com.br): photos and videos with the device camera,
-with zoom (native, or by cropping when the device has none), torch, camera switching, a 3, 5
-or 10 second timer, aspect ratio (full, 1:1, 4:3, 16:9), 480p to 4K resolution, rule-of-thirds
-or golden grid, front camera mirroring and a level. A capture goes to the Pictures folder in
-Files, to a download, or to the device share sheet. In all ten RoqueOS languages.
+## Credits and licence
 
-It moved out of the closed RoqueOS core on 28/09/2026 into its own repository in the
-[roqueos-apps](https://github.com/roqueos-apps) organization. RoqueOS installs it by tag, and it
-talks to RoqueOS only through the `sistema` of
-[`@roqueos-apps/app-sdk`](https://github.com/roqueos-apps/app-sdk): `arquivos` (save to
-Pictures, open Pictures in the Finder; the app declares that one folder and never sees a path),
-plus language, light profile, notices and metrics. The camera and microphone are requested
-straight from the browser; the live image never leaves the device, and closing the window turns
-the camera off. Guests cannot save to Files (the system refuses without an account), but can
-still download or share.
-
-Run `yarn install --ignore-scripts`, then `yarn dev` (a fake RoqueOS window with a local
-account) or `yarn verificar` (what CI runs). Every commit must be signed off (DCO). Licensed
-under [MIT](LICENSE); icons are Material Icons (Apache-2.0). The RoqueOS name and brand belong
-to LEVELHARD and are not covered.
-
-`paridade.json` lists everything this app did inside the RoqueOS core and what happened to each
-item when it moved out (kept, changed with a note, or lost only with a written decision), each
-backed by a test in this repository or other evidence. RoqueOS checks it in the installed
-package before accepting a version.
+[MIT](LICENSE). The icons are [Material Icons](https://fonts.google.com/icons) (Apache-2.0), through the UI kit; see [ASSETS.md](ASSETS.md). The RoqueOS name and brand belong to LEVELHARD and are not covered by the licence.

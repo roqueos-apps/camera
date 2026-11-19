@@ -1,45 +1,21 @@
-# Como contribuir
+# Contributing
 
-Obrigado por querer ajudar. A régua comum da organização está no
-[CONTRIBUTING da roqueos-apps](https://github.com/roqueos-apps/.github/blob/main/CONTRIBUTING.md);
-aqui entra só o que é da Câmera.
+_[Português](docs/pt-BR/CONTRIBUTING.md) | English_
 
-1. Abra uma issue antes de mudar o que a pessoa vê ou o que a Câmera salva. Correção pequena
-   pode ir direto para o PR.
-2. Faça o fork, crie um branch e rode `yarn install --ignore-scripts`.
-3. Todo commit leva `Signed-off-by` (`git commit -s`, o DCO). O check `dco` do pull request
-   reprova sem.
-4. Toda correção vem com um teste que reprova sem ela. O motor (stream, recorte, zoom, vídeo)
-   está em `test/useCamera.spec.js`; a tela e o que ela pede ao sistema, em `test/app.spec.js`;
-   as chaves de texto, em `test/textos.spec.js`.
-5. **O nome do arquivo é permanente.** As fotos das pessoas estão nas Imagens como
-   `RoqueOS_Photo_<hora>.jpg` e os vídeos como `RoqueOS_Video_<hora>.webm`: mudar o começo separa
-   as fotos novas das antigas.
-6. A câmera e o microfone vêm do navegador; os Arquivos, do `sistema`. A Câmera nunca guarda a
-   imagem em outro lugar, nem manda para fora do aparelho sem a pessoa apertar salvar, baixar ou
-   compartilhar.
-7. Texto novo entra nos dez `i18n/*.json`, com as mesmas chaves, e a tela pede pela chave: o
-   `app check` reprova se faltar um idioma, e o `textos.spec.js` se a tela pedir uma chave que
-   não existe ou sobrar uma que ela não pede.
-8. Rode `yarn verificar` antes de abrir o PR. É o mesmo que o CI roda. `yarn dev` abre a Câmera
-   numa janela falsa do RoqueOS, com a câmera de verdade do seu computador.
+Thanks for wanting to help. The organization-wide guide is the [roqueos-apps CONTRIBUTING](https://github.com/roqueos-apps/.github/blob/main/CONTRIBUTING.md); here goes only what belongs to the Camera.
 
-Não mude o `id` do `app.json` (`camera`): é por ele que o RoqueOS acha a janela, o atalho e o
-lugar dela no Big Picture.
+## How to contribute
 
-O código novo, os comentários e as mensagens de commit são em português do Brasil (o motor que
-veio do RoqueOS tem nomes em inglês, e fica assim). Issue e PR em inglês são bem-vindos. Ao
-participar você concorda com o [código de conduta](CODE_OF_CONDUCT.md).
+1. Open an issue before changing what people see or what the Camera saves. A small fix can go straight to the pull request.
+2. Fork, create a branch and run `yarn install --ignore-scripts`.
+3. Every commit carries `Signed-off-by` (`git commit -s`, the DCO). The pull request's `dco` check fails without it; `git rebase --signoff main` fixes a branch that missed it.
+4. Every fix comes with a test that fails without it. The engine (stream, crop, zoom, video) is in `test/useCamera.spec.js`; the screen and what it asks of the system, in `test/app.spec.js`; the text keys, in `test/textos.spec.js`.
+5. **The file name is permanent.** People's photos are in Pictures as `RoqueOS_Photo_<time>.jpg` and videos as `RoqueOS_Video_<time>.webm`: changing the prefix splits new photos from old ones.
+6. The camera and microphone come from the browser; Files, from the `sistema`. The Camera never keeps the image anywhere else, nor sends it off the device unless the person presses save, download or share.
+7. New text goes into all ten `i18n/*.json`, with the same keys, and the screen asks by key: `app check` fails if a language is missing one, and `textos.spec.js` fails if the screen asks for a key that does not exist or one is left that it does not ask for.
+8. Changed a feature or a test cited in `paridade.json`? Update the inventory in the same commit.
+9. Run `yarn verificar` before opening the pull request. It is what CI runs. `yarn dev` opens the Camera in a fake RoqueOS window, with your computer's real camera.
 
----
+Never change the `id` in `app.json` (`camera`): it is how RoqueOS finds the window, the shortcut and its place in Big Picture.
 
-## Contributing (English)
-
-The organization-wide guide is the
-[roqueos-apps CONTRIBUTING](https://github.com/roqueos-apps/.github/blob/main/CONTRIBUTING.md).
-Open an issue before changing what people see or what the Camera saves; fork, branch,
-`yarn install --ignore-scripts`; sign off every commit (`git commit -s`); every fix comes with
-a test that fails without it. The saved file name prefix is permanent. The camera never keeps or
-sends a capture anywhere unless the person saves, downloads or shares it. New text goes into all
-ten `i18n/*.json`; run `yarn verificar` before the pull request. Never change the `id` in
-`app.json`.
+New code, comments and commit messages are in Brazilian Portuguese (the engine that came from RoqueOS has English names, and stays that way). Issues and pull requests in English are welcome. By taking part you agree to the [code of conduct](CODE_OF_CONDUCT.md). The rest of the documentation starts at [docs/INDEX.md](docs/INDEX.md).

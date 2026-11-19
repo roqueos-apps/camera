@@ -5,6 +5,13 @@ usa [versionamento semântico](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado
+
+- A documentação no padrão da família: `docs/` em inglês (índice, começar, arquitetura,
+  referência, operação, quando quebra, glossário, integrações, testes e modelo de ameaças), o par
+  em pt-BR em `docs/pt-BR/`, o manifesto `docs/docs.json`, e o README e o CONTRIBUTING em inglês
+  com o par em português (`README.pt-BR.md`, `docs/pt-BR/CONTRIBUTING.md`).
+
 ### Mudado
 
 - O kit de interface (`@roqueos-apps/ui`) entra por HTTPS (`github:roqueos-apps/ui#v0.6.0`), no
